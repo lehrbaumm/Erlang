@@ -8,3 +8,15 @@ ebin
 rel/example_project
 .concrete/DEV_MODE
 .rebar
+
+# My Folders #
+##############
+/Compiler/
+/Assembler/
+/Linker/
+/Debugger/
+/Simulator/
+/Editor/
+/Manual/
+/Examples/
+/CoreWars/
