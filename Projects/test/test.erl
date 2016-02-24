@@ -1,5 +1,5 @@
 -module(test).
--export([a/2, b/2, c/1, d/1, e/1, f/1, g/1, h/1, i/1, j/1, k/2]).
+-export([a/2, b/2, c/1, d/1, e/1, f/1, g/1, h/1, i/1, j/1, k/2, l/2, m/3]).
 
 a(P, L) -> a(P, L, 0).
 a(P, [H|T], PO) -> case P =:= H of
@@ -52,3 +52,7 @@ j(M) -> if
 k([], _POS) -> [];
 k([H|_T], 0) -> H;
 k([_H|T], POS) -> k(T, POS-1).
+l(_N, 0) -> 1;
+l(N, 1) -> N;
+l(N, P) -> N * l(N, P-1).
+m(N, P, Name) -> file:write_file(Name, io_lib:format("~p", [l(N, P)])).
