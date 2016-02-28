@@ -1,5 +1,5 @@
 -module(test).
--export([a/2, b/2, c/1, d/1, e/1, f/1, g/1, h/1, i/1, j/1, k/2, l/2, m/3, n/3, o/1, r/1, t/1, v/2]).
+-export([a/2, b/2, c/1, d/1, e/1, f/1, g/1, h/1, i/1, j/1, k/2, l/2, m/3, n/3, o/1, r/1, t/1, v/2, w/2, x/2, y/2, z/2, z/4]).
 
 a(P, L) -> a(P, L, 0).
 a(P, [H|T], PO) -> case P =:= H of
@@ -41,9 +41,12 @@ g(L) -> if
 	end.
 g(L, MAX) -> [MAX|g(f(L, MAX))].
 h(L) -> lists:reverse(g(L)).
-i(0) -> 1;
-i(1) -> 1;
-i(M) -> M * i(M-1).
+i(0, N) -> 1*N;
+i(M, N) -> i(M-1, N*M).
+i(M) -> i(M-1, M).
+%i(0) -> 1;
+%i(1) -> 1;
+%i(M) -> M * i(M-1). %<- Ram innefficent
 j(0) -> 1;
 j(M) -> if
 		M > 0 -> 2 * j(M-1);
@@ -77,3 +80,39 @@ t(C) -> file:write_file("hello.5", io_lib:format("~p.~n \r", [os:timestamp()]), 
 				file:write_file("hello.5", io_lib:format("~p.~n \r\r\r", [os:timestamp()]), [append]).
 u(C, Name) -> n(2, C, Name).
 v(C, Name) -> file:write_file(Name , io_lib:format("~p.~n \r\r", [timer:tc(test, n, [2, C, Name])]), [append]).
+w(_B, 0, N) -> N*1;
+w(B, E, N) -> w(B, E-1, N*B).
+w(B, E) -> w(B, E-1, B).
+x(Fun, Arg) -> file:write_file('Name' , io_lib:format("~p.~n \r\r", [timer:tc(test, Fun, Arg)]), [append]).
+
+y(_B, 0, N) -> N*1;
+y(B, E, N) -> io:fwrite(io_lib:format("~p ~n", [E])), 
+	y(B, E-1, N*B).
+y(B, E) -> io:fwrite(io_lib:format("~p ~n", [E])), 
+	y(B, E-1, B).
+	
+z(_B, 0, N, Pid) -> Pid ! {solution, N*1};
+z(B, E, N, Pid) -> io:fwrite(io_lib:format("~p ~n", [E])),  
+	spawn(test, z, [B, E-1, N*B, Pid]),
+	done.
+	%z(B, E-1, N*B).
+z(B, E) -> io:fwrite(io_lib:format("~p ~n", [E])), 
+	spawn(test, z, [B, E-1, B, self()]),
+	z().
+z() -> 	receive
+			{solution, Sol} -> Sol
+		end.
+		
+aa(_B, 0, N, Pid) -> Pid ! {done, N*1};
+aa{B, E, N, Pid} -> io:fwrite(io_lib:format("~p ~n", [E])),
+						aa(B, E-1, N*B, Pid).
+aa(_B, _E, 0) ->	aa(0, 0);
+aa(B, E, Cs) -> spawn(test, aa, [B, E-2, B, self()]),
+					aa(B, E, Cs-1).
+
+
+aa(4, Sol) -> Sol;
+aa(C, Sol) -> 	receive
+					{done, Ext} -> aa(C+1, Sol*Ext)
+				end.
+	
